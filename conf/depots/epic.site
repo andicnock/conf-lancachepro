@@ -1,0 +1,24 @@
+server {
+  listen 80;
+  listen              443 ssl;
+  server_name download.epicgames.com download1.epicgames.com download2.epicgames.com download3.epicgames.com download4.epicgames.com download5.epicgames.com;
+    ssl_certificate     epic.crt;
+    ssl_certificate_key epic.key;
+# the clients need to be started with the extra flag: -http=wininet
+
+  access_log /var/log/depot/epic/depot-access.log;
+  error_log /var/log/depot/epic/depot-error.log;
+
+  resolver 8.8.8.8 4.2.2.2;
+
+  location / {
+    # Cache location
+    proxy_cache epic;
+    proxy_cache_key "$server_name$request_uri";
+    proxy_cache_valid 200 7d;
+
+    # Use proxy_cache method
+    include proxy/proxy-cache.conf;
+    include proxy/proxy-pass.conf;
+  }
+}
